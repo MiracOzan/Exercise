@@ -15,5 +15,4 @@ public class City
     public int UserId { get; set; }
 
     public List<Photo> Photos { get; set; }
-    public User User { get; set; }
 }
