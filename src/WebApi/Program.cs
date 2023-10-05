@@ -1,23 +1,23 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
+using WebApi;
 using WebApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var Configuration = builder.Configuration;
 
-IConfiguration Configuration = null;
-
-var key = Encoding.ASCII.GetBytes(Configuration.GetSection("Appsettings:Token").Value);
+var key = Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
 builder.Services.AddDbContext<DataContext>(
     x => 
-        x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))); 
 
 builder.Services.AddCors();
 
@@ -55,7 +55,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseCors(x => 
+app.UseCors(x =>
     x.AllowAnyHeader()
         .AllowAnyMethod()
         .AllowAnyOrigin());
