@@ -2,38 +2,32 @@
 using Microsoft.EntityFrameworkCore;
 using WebApi.Data;
 
-namespace WebApi.Controllers
+namespace WebApi.Controllers;
+
+public class HomeController(DataContext context) : Controller
 {
-    public class HomeController : Controller
+    public DataContext _context = context;
+
+    [HttpGet]
+    public async Task<ActionResult> GetValue()
     {
-        public DataContext _context;
-        
-        public HomeController(DataContext context)
-        {
-            _context = context;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult> GetValue()
-        {
-            var values = await _context.City.ToListAsync();
+        var values = await _context.City.ToListAsync();
             
-            return Ok(values);
-        }
+        return Ok(values);
+    }
 
-        [HttpGet]
-        public async Task<ActionResult> Get(int id)
-        {
-            var values = await _context.City
-                .FirstOrDefaultAsync(v=>v.Id == id);
+    [HttpGet]
+    public async Task<ActionResult> Get(int id)
+    {
+        var values = await _context.City
+            .FirstOrDefaultAsync(v=>v.Id == id);
             
-            return Ok(values);
-        }
+        return Ok(values);
+    }
 
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
+    [HttpPost]
+    public void Post([FromBody] string value)
+    {
             
-        }
     }
 }

@@ -5,15 +5,8 @@ using WebApi.Models;
 
 namespace WebApi.Data;
 
-public class AuthRepository : IAuthRepository
+public class AuthRepository(DataContext context) : IAuthRepository
 {
-    private DataContext _context;
-
-    public AuthRepository(DataContext context)
-    {
-        _context = context;
-    }
-
     public async Task<User> Register(User user, string password)
     {
         byte[] passwordsalt, passwordhash;
@@ -22,8 +15,8 @@ public class AuthRepository : IAuthRepository
         user.PasswordHash = passwordhash;
         user.PasswordSalt = passwordsalt;
 
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
 
         return user;
     }
@@ -39,7 +32,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<User> Login(string userName, string password)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
+        var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
         if (user == null)
         {
             return null;
@@ -72,7 +65,7 @@ public class AuthRepository : IAuthRepository
 
     public async Task<bool> UserExist(string userName)
     {
-        if (await _context.Users.AnyAsync(x => x.UserName == userName))
+        if (await context.Users.AnyAsync(x => x.UserName == userName))
         {
             return true;
         }

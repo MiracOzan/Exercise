@@ -10,21 +10,12 @@ using WebApi.Models;
 namespace WebApi.Controllers;
 
 [Route("api/Auth")]
-public class AuthController : Controller
+public class AuthController(IAuthRepository authRepository, IConfiguration configuration) : Controller
 {
-    private IAuthRepository _authRepository;
-    private IConfiguration _configuration;
-
-    public AuthController(IAuthRepository authRepository, IConfiguration configuration)
-    {
-        _authRepository = authRepository;
-        _configuration = configuration;
-    }
-
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserForRegisterDto userForRegisterDto)
     {
-        if (await _authRepository.UserExist(userForRegisterDto.UserName))
+        if (await authRepository.UserExist(userForRegisterDto.UserName))
         {
             ModelState.AddModelError("Username", "Username already Exist");
         }
@@ -39,14 +30,14 @@ public class AuthController : Controller
             UserName = userForRegisterDto.UserName
         };
 
-        var ToCreate = await _authRepository.Register(userCreate, userForRegisterDto.Password);
+        var ToCreate = await authRepository.Register(userCreate, userForRegisterDto.Password);
         return StatusCode(201);
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserForLoginDto userForLoginDto)
     {
-        var user = _authRepository.Login(userForLoginDto.UserName, userForLoginDto.Password);
+        var user = authRepository.Login(userForLoginDto.UserName, userForLoginDto.Password);
 
         if (user == null)
         {
@@ -54,7 +45,7 @@ public class AuthController : Controller
         }
 
         var tokenhandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configuration.GetSection("AppSettings:Token").Value);
+        var key = Encoding.ASCII.GetBytes(configuration.GetSection("AppSettings:Token").Value);
         
         var tokenDescriptior = new SecurityTokenDescriptor
         {

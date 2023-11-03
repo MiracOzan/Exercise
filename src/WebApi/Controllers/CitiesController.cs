@@ -7,23 +7,14 @@ using WebApi.Models;
 namespace WebApi.Controllers;
 
 [Route("api/Cities")]
-public class CitiesController : Controller
+public class CitiesController(IAppRepository appRepository, IMapper mapper) : Controller
 {
-    private readonly IAppRepository _appRepository;
-    private readonly IMapper _mapper;
-
-    public CitiesController(IAppRepository appRepository, IMapper mapper)
-    {
-        _appRepository = appRepository;
-        _mapper = mapper;
-    }
-
     [HttpGet]
     [Route("GetCities")]
     public ActionResult GetCities()
     {
-        var cities = _appRepository.GetCities();
-        var citiesReturn = _mapper.Map<List<CityForListDto>>(cities);
+        var cities = appRepository.GetCities();
+        var citiesReturn = mapper.Map<List<CityForListDto>>(cities);
         return Ok(cities);
     }
 
@@ -31,16 +22,16 @@ public class CitiesController : Controller
     [Route("add")]
     public ActionResult Add ([FromBody]City city)
     {
-        _appRepository.Add(city);
-        _appRepository.SaveAll();
+        appRepository.Add(city);
+        appRepository.SaveAll();
         return Ok(city);
     }
 
     [HttpGet]
     public ActionResult GetCitiesById(int id)
     {
-        var cities = _appRepository.GetCityById(id);
-        var citytoReturn = _mapper.Map<CityForDetailDto>(cities);
+        var cities = appRepository.GetCityById(id);
+        var citytoReturn = mapper.Map<CityForDetailDto>(cities);
         return Ok(citytoReturn);
     }
 
@@ -48,7 +39,7 @@ public class CitiesController : Controller
     [Route("Photos")]
     public ActionResult GetPhotosById(int id)
     {
-        var photos = _appRepository.GetPhotosbyCity(id);
+        var photos = appRepository.GetPhotosbyCity(id);
         return Ok(photos);
     }
 
